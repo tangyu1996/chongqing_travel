@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>重庆·行千里 致广大 | 魔幻山城文旅指南</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fefaf5;
+            color: #1e2a2e;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1e9e0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c0392b;
+            border-radius: 10px;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 248, 240, 0.96);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            padding: 1rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem 1.5rem;
+            border-bottom: 2px solid #e2b9a3;
+        }
+        .navbar a {
+            color: #8b3c2c;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: 0.2s;
+            padding: 0.4rem 0.8rem;
+            border-radius: 30px;
+            letter-spacing: 1px;
+        }
+        .navbar a:hover {
+            background-color: #c0392b20;
+            color: #b33a2a;
+            transform: translateY(-2px);
+        }
+        .navbar a i {
+            margin-right: 6px;
+        }
+
+        /* Hero 矩形区域 */
+        .hero {
+            background: linear-gradient(135deg, #2c1a12 0%, #4a2c1e 100%);
+            color: #fff3e6;
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.2rem;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        }
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 1rem auto 0;
+            opacity: 0.9;
+        }
+        .hero i {
+            color: #f7c873;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        /* 景点卡片 */
+        .spot-section {
+            background: white;
+            border-radius: 2rem;
+            margin-bottom: 4rem;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(35px);
+            transition: opacity 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.7s ease;
+        }
+        .spot-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .spot-inner {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch;
+            flex-direction: row;
+        }
+        /* 偶数模块：图片在右，文字在左（错落排版） */
+        .spot-section:nth-child(even) .spot-inner {
+            flex-direction: row-reverse;
+        }
+
+        /* 轮播容器区域 */
+        .carousel-container {
+            flex: 1.2;
+            min-width: 280px;
+            background-color: #f3ede8;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 1.5rem;
+            cursor: default;
+        }
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .carousel-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            transition: transform 0.4s ease-in-out;
+        }
+        .carousel-item {
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
+        }
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .carousel-item img:hover {
+            transform: scale(1.02);
+        }
+        /* 轮播按钮 */
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: 0.2s;
+            z-index: 10;
+        }
+        .carousel-btn:hover {
+            background: rgba(0,0,0,0.8);
+            color: #f7c873;
+        }
+        .btn-prev {
+            left: 12px;
+        }
+        .btn-next {
+            right: 12px;
+        }
+        /* 指示点 */
+        .carousel-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 10;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .dot.active {
+            background-color: #e67e22;
+            transform: scale(1.2);
+        }
+
+        /* 右侧内容区 */
+        .spot-content {
+            flex: 2;
+            padding: 2rem 2rem 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        .spot-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #a3422e;
+            border-left: 6px solid #e67e22;
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+            font-family: 'Playfair Display', serif;
+        }
+        .desc {
+            color: #2c3e2f;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            font-size: 0.98rem;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+            background: #fff7ef;
+            padding: 1rem 1.2rem;
+            border-radius: 1.2rem;
+        }
+        .info-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 0.8rem;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+        .info-card h4 {
+            font-weight: 700;
+            color: #b9512e;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .info-card p, .info-card ul {
+            font-size: 0.85rem;
+            color: #2d3e40;
+            margin-left: 0.5rem;
+            line-height: 1.4;
+        }
+        .food-tip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.8rem;
+        }
+        .badge {
+            background: #fbe9e4;
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #b64926;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 1rem;
+            animation: zoomIn 0.3s;
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .close-modal {
+            position: absolute;
+            top: 25px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.2s;
+            cursor: pointer;
+            background: rgba(0,0,0,0.5);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-modal:hover {
+            color: #e67e22;
+        }
+
+        footer {
+            background: #2c1a12;
+            color: #efdbcd;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            font-size: 0.85rem;
+        }
+
+        /* 响应式 */
+        @media (max-width: 860px) {
+            .spot-inner, .spot-section:nth-child(even) .spot-inner {
+                flex-direction: column;
+            }
+            .carousel-container {
+                min-height: 280px;
+                width: 100%;
+            }
+            .spot-content {
+                padding: 1.5rem;
+            }
+            .navbar a {
+                font-size: 0.8rem;
+                padding: 0.3rem 0.6rem;
+            }
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            .container {
+                padding: 0 1rem;
+            }
+        }
+        @media (max-width: 500px) {
+            .carousel-container {
+                min-height: 220px;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="#hongyadong"><i class="fas fa-landmark"></i> 洪崖洞</a>
+    <a href="#jiefangbei"><i class="fas fa-monument"></i> 解放碑</a>
+    <a href="#ciqikou"><i class="fas fa-store"></i> 磁器口</a>
+    <a href="#cableway"><i class="fas fa-train"></i> 长江索道</a>
+    <a href="#wulong"><i class="fas fa-mountain"></i> 武隆喀斯特</a>
+    <a href="#dazu"><i class="fas fa-landmark"></i> 大足石刻</a>
+</nav>
+
+<header class="hero">
+    <h1>重庆·行千里 致广大</h1>
+    <p><i class="fas fa-map-marker-alt"></i> 8D魔幻山城 · 热辣人间烟火 <i class="fas fa-utensils"></i></p>
+    <p style="font-size: 0.9rem; margin-top: 1rem;">🏮 一城千面，等你赴约 🏮</p>
+</header>
+
+<div class="container">
+    <!-- 1. 洪崖洞 (左图右文) -->
+    <section id="hongyadong" class="spot-section">
+        <div class="spot-inner">
+            <div class="carousel-container" data-spot="hongyadong">
+                <div class="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item"><img src="images/hongyadong-1.jpg" alt="洪崖洞1" class="carousel-img"></div>
+                        <div class="carousel-item"><img src="images/hongyadong-2.jpg" alt="洪崖洞2" class="carousel-img"></div>
+                        <div class="carousel-item"><img src="images/hongyadong-3.jpg" alt="洪崖洞3" class="carousel-img"></div>
+                    </div>
+                    <button class="carousel-btn btn-prev"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-btn btn-next"><i class="fas fa-chevron-right"></i></button>
+                    <div class="carousel-dots"></div>
+                </div>
+            </div>
+            <div class="spot-content">
+                <h2 class="spot-title">✨ 洪崖洞 · 现实版千与千寻</h2>
+                <p class="desc">洪崖洞拥有2300多年历史，以巴渝传统建筑“吊脚楼”风貌为主体，依山就势，沿江而建。夜晚灯火璀璨，如梦幻童话世界，是重庆最炙手可热的网红地标。</p>
+                <div class="info-grid">
+                    <div class="info-card"><h4><i class="fas fa-clock"></i> 实用信息</h4><p>🕒 开放时间：11:00-22:00（亮灯18:30-22:30）<br>🎫 门票：免费（需官方小程序预约）<br>📍 地址：渝中区嘉陵江滨江路88号</p></div>
+                    <div class="info-card"><h4><i class="fas fa-route"></i> 游玩攻略</h4><p>建议从顶层(11F)向下游览，乘电梯至1F亲水观景平台，千厮门大桥是绝佳机位。游玩2-3小时，晚上7点后气氛最佳。</p></div>
+                </div>
+                <div class="info-card"><h4><i class="fas fa-utensils"></i> 美食推荐</h4><div class="food-tip"><span class="badge">🔥 土火老火锅</span><span class="badge">🍜 酸辣粉</span><span class="badge">🍢 烤猪蹄</span><span class="badge">🥘 毛血旺</span></div></div>
+                <div class="info-card"><h4><i class="fas fa-camera"></i> 打卡小贴士</h4><p>📸 千厮门大桥上拍全景；穿浅色衣服更出片；避开周末人流高峰，带广角镜头捕捉吊脚楼细节。</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. 解放碑 (右图左文) -->
+    <section id="jiefangbei" class="spot-section">
+        <div class="spot-inner">
+            <div class="carousel-container" data-spot="jiefangbei">
+                <div class="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item"><img src="images/jiefangbei-1.jpg" alt="解放碑1" class="carousel-img"></div>
+                        <div class="carousel-item"><img src="images/jiefangbei-2.jpg" alt="解放碑2" class="carousel-img"></div>
+                        <div class="carousel-item"><img src="images/jiefangbei-3.jpg" alt="解放碑3" class="carousel-img"></div>
+                    </div>
+                    <button class="carousel-btn btn-prev"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-btn btn-next"><i class="fas fa-chevron-right"></i></button>
+                    <div class="carousel-dots"></div>
+                </div>
+            </div>
+            <div class="spot-content">
+                <h2 class="spot-title">🏛️ 解放碑 · 精神堡垒</h2>
+                <p class="desc">抗战胜利纪功碑暨人民解放纪念碑，是重庆核心地标。周围商圈繁华，时尚与传统交融，见证山城变迁与繁荣。</p>
+                <div class="info-grid">
+                    <div class="info-card"><h4><i class="fas fa-info-circle"></i> 实用信息</h4><p>🕒 全天开放（碑体参观外部）<br>🎫 免费<br>📍 渝中区民族路与邹容路交汇处</p></div>
+                    <div class="info-card"><h4><i class="fas fa-shopping-bag"></i> 游玩攻略</h4><p>白天打卡纪念碑+八一好吃街，晚上逛WFC观景台。周边商场云集，建议安排半日购物美食之旅。</p></div>
+                </div>
+                <div class="info-card"><h4><i class="fas fa-utensils"></i> 美食推荐</h4><div class="food-tip"><span class="badge">🍲 洞子老火锅</span><span class="badge">🥟 好又来酸辣粉</span><span class="badge">🍡 山城小汤圆</span><span class="badge">🍧 冰粉凉虾</span></div></div>
+                <div class="info-card"><h4><i class="fas fa-camera"></i> 打卡小贴士</h4><p>📸 夜晚灯光下纪念碑更庄严；可站在国泰艺术中心前仰拍；周边有很多涂鸦墙适合街拍。</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. 磁器口 (左图右文) -->
+    <section id="ciqikou" class="spot-section">
+        <div class="spot-inner">
+            <div class="carousel-container" data-spot="ciqikou">
+                <div class="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item"><img src="images/ciqikou-1.jpg" alt="磁器口1" class="carousel-img"></div>
+                        <div class="carousel-item"><img src="images/ciqikou-2.jpg" alt="磁器口2" class="carousel-img"></div>
+                        <div class="carousel-item"><img src="images/ciqikou-3.jpg" alt="磁器口3" class="carousel-img"></div>
+                    </div>
+                    <button class="carousel-btn btn-prev"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-btn btn-next"><i class="fas fa-chevron-right"></i></button>
+                    <div class="carousel-dots"></div>
+                </div>
+            </div>
+            <div class="spot-content">
+                <h2 class="spot-title">🏮 磁器口 · 千年古镇</h2>
+                <p class="desc">“一条石板路，千年磁器口”，古色古香的巴渝老街，汇集美食、茶馆、文创，感受老重庆的码头文化。</p>
+                <div class="info-grid">
+                    <div class="info-card"><h4><i class="fas fa-clock"></i> 实用信息</h4><p>🕒 全天开放（店铺9:00-22:00）<br>🎫 免费进入<br>📍 沙坪坝区磁南街1号</p></div>
+                    <div class="info-card"><h4><i class="fas fa-hiking"></i> 游玩攻略</h4><p>建议从磁器口正门进入，打卡翰林院、宝轮寺，尝尝陈麻花，走累找江边茶馆歇脚。游玩2-3小时。</p></div>
+                </div>
+                <div class="info-card"><h4><i class="fas fa-utensils"></i> 美食推荐</h4><div class="food-tip"><span class="badge">🥨 陈昌银麻花</span><span class="badge">🐟 古镇烤鱼</span><span class="badge">🍲 毛血旺</span><span class="badge">🍵 盖碗茶</span></div></div>
+                <div class="info-card"><h4><i class="fas fa-camera"></i> 打卡小贴士</h4><p>📸 后街吊脚楼、古戏台拍照出片；穿旗袍或汉服很有韵味；避开节假日高峰，清晨人少景美。</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 长江索道 (右图左文) -->
+    <section id="cableway" class="spot-section">
+        <div class="spot-inner">
+            <div class="carousel-container" data-spot="changjiangsuodao">
+                <div class="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item"><img src="images/changjiangsuodao-1.jpg" alt="长江索道1" class="carousel-img"></div>
+                        <div class="carousel-item"><img src="images/changjiangsuodao-2.jpg" alt="长江索道2" class="carousel-img"></div>
+                        <div class="carousel-item"><img src="images/changjiangsuodao-3.jpg" alt="长江索道3" class="carousel-img"></div>
+                    </div>
+                    <button class="carousel-btn btn-prev"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-btn btn-next"><i class="fas fa-chevron-right"></i></button>
+                    <div class="carousel-dots"></div>
+                </div>
+            </div>
+            <div class="spot-content">
+                <h2 class="spot-title">🚠 长江索道 · 空中巴士</h2>
+                <p class="desc">万里长江第一条空中走廊，乘坐索道飞渡长江，俯瞰山城层叠地貌，是电影《疯狂的石头》取景地。</p>
+                <div class="info-grid">
+                    <div class="info-card"><h4><i class="fas fa-ticket-alt"></i> 实用信息</h4><p>🕒 07:30-22:30<br>🎫 单程20元，往返30元（可刷公交卡）<br>📍 新华路站（渝中） / 上新街站（南岸）</p></div>
+                    <div class="info-card"><h4><i class="fas fa-lightbulb"></i> 游玩攻略</h4><p>建议从南岸上新街上车人相对少，车厢靠窗位置最佳，单程4分钟，傍晚乘坐可赏落日与夜景。</p></div>
+                </div>
+                <div class="info-card"><h4><i class="fas fa-utensils"></i> 美食推荐</h4><div class="food-tip"><span class="badge">🌶️ 南山枇杷园火锅</span><span class="badge">🍜 眼镜面</span><span class="badge">🧆 泉水鸡</span></div></div>
+                <div class="info-card"><h4><i class="fas fa-camera"></i> 打卡小贴士</h4><p>📸 在索道车厢里拍江岸建筑群；南滨路观景台拍索道全貌；避开早晚高峰，提前网上购票减少排队。</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. 武隆喀斯特 (左图右文) -->
+    <section id="wulong" class="spot-section">
+        <div class="spot-inner">
+            <div class="carousel-container" data-spot="kasite">
+                <div class="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item"><img src="images/kasite-1.jpg" alt="武隆喀斯特1" class="carousel-img"></div>
+                        <div class="carousel-item"><img src="images/kasite-2.jpg" alt="武隆喀斯特2" class="carousel-img"></div>
+                        <div class="carousel-item"><img src="images/kasite-3.jpg" alt="武隆喀斯特3" class="carousel-img"></div>
+                    </div>
+                    <button class="carousel-btn btn-prev"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-btn btn-next"><i class="fas fa-chevron-right"></i></button>
+                    <div class="carousel-dots"></div>
+                </div>
+            </div>
+            <div class="spot-content">
+                <h2 class="spot-title">⛰️ 武隆喀斯特 · 世界自然遗产</h2>
+                <p class="desc">天生三桥、仙女山、芙蓉洞，罕见的地质奇观。电影《变形金刚4》取景地，天坑地缝震撼视觉。</p>
+                <div class="info-grid">
+                    <div class="info-card"><h4><i class="fas fa-map-marked-alt"></i> 实用信息</h4><p>🕒 夏季8:30-16:30，冬季9:00-16:00<br>🎫 天生三桥125元（含交通车）<br>📍 重庆市武隆区仙女山镇</p></div>
+                    <div class="info-card"><h4><i class="fas fa-hiking"></i> 游玩攻略</h4><p>建议游玩一整天，上午天生三桥，下午仙女山草原。穿舒适运动鞋，台阶较多，带好雨具。</p></div>
+                </div>
+                <div class="info-card"><h4><i class="fas fa-utensils"></i> 美食推荐</h4><div class="food-tip"><span class="badge">🐟 武隆乌江鱼</span><span class="badge">🥘 碗碗羊肉</span><span class="badge">🍲 腊排骨汤锅</span></div></div>
+                <div class="info-card"><h4><i class="fas fa-camera"></i> 打卡小贴士</h4><p>📸 天龙桥下方仰拍天坑光影；穿亮色衣物与绿野对比；雨后初晴常有云雾，仙气十足。</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. 大足石刻 (右图左文) -->
+    <section id="dazu" class="spot-section">
+        <div class="spot-inner">
+            <div class="carousel-container" data-spot="dazushike">
+                <div class="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item"><img src="images/dazushike-1.jpg" alt="大足石刻1" class="carousel-img"></div>
+                        <div class="carousel-item"><img src="images/dazushike-2.jpg" alt="大足石刻2" class="carousel-img"></div>
+                        <div class="carousel-item"><img src="images/dazushike-3.jpg" alt="大足石刻3" class="carousel-img"></div>
+                    </div>
+                    <button class="carousel-btn btn-prev"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-btn btn-next"><i class="fas fa-chevron-right"></i></button>
+                    <div class="carousel-dots"></div>
+                </div>
+            </div>
+            <div class="spot-content">
+                <h2 class="spot-title">🕉️ 大足石刻 · 石窟艺术瑰宝</h2>
+                <p class="desc">世界八大石窟之一，唐末宋初的摩崖造像，宝顶山石刻精美震撼，被誉为“东方艺术明珠”。</p>
+                <div class="info-grid">
+                    <div class="info-card"><h4><i class="fas fa-hourglass-half"></i> 实用信息</h4><p>🕒 8:30-18:00（17:30停止售票）<br>🎫 宝顶山+北山联票135元<br>📍 重庆市大足区宝顶镇</p></div>
+                    <div class="info-card"><h4><i class="fas fa-walking"></i> 游玩攻略</h4><p>建议请讲解或租语音导览，重点看宝顶山千手观音、卧佛。游玩时间3-4小时，注意保护文物勿触摸。</p></div>
+                </div>
+                <div class="info-card"><h4><i class="fas fa-utensils"></i> 美食推荐</h4><div class="food-tip"><span class="badge">🥩 邮亭鲫鱼</span><span class="badge">🍲 丁家坡洋芋</span><span class="badge">🌶️ 大足冬菜尖</span></div></div>
+                <div class="info-card"><h4><i class="fas fa-camera"></i> 打卡小贴士</h4><p>📸 千手观音造像禁止使用闪光灯；上午光线更适合拍摄石刻细节；穿素色衣服更显庄重。</p></div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<footer>
+    <p><i class="fas fa-heart" style="color:#e67e22;"></i> 山水之城·美丽重庆  |  官方文旅推荐  |  行千里，致广大 <i class="fas fa-heart" style="color:#e67e22;"></i></p>
+    <p style="margin-top: 0.5rem;">© 2025 重庆文旅宣传 | 探索8D魔幻之都</p>
+</footer>
+
+<!-- 图片放大模态框 -->
+<div id="imageModal" class="modal">
+    <span class="close-modal">&times;</span>
+    <img class="modal-content" id="modalImg" alt="放大图片">
+</div>
+
+<script>
+    // 自动轮播管理：仅当轮播容器进入视口时启动自动播放，离开视口时停止
+    function initCarousel(container) {
+        const carousel = container.querySelector('.carousel');
+        const inner = carousel.querySelector('.carousel-inner');
+        const items = carousel.querySelectorAll('.carousel-item');
+        const prevBtn = carousel.querySelector('.btn-prev');
+        const nextBtn = carousel.querySelector('.btn-next');
+        const dotsContainer = carousel.querySelector('.carousel-dots');
+        let currentIndex = 0;
+        const total = items.length;
+        let autoInterval = null;
+        let isVisible = false;      // 当前容器是否可见（用于自动轮播）
+        
+        // 生成圆点
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i < total; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if (i === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => {
+                goToSlide(i);
+                resetAutoTimerIfVisible();  // 只有可见时才重置计时器
+            });
+            dotsContainer.appendChild(dot);
+        }
+        const dots = dotsContainer.querySelectorAll('.dot');
+        
+        function updateDots() {
+            dots.forEach((dot, idx) => {
+                if (idx === currentIndex) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        }
+        
+        function goToSlide(index) {
+            if (index < 0) index = total - 1;
+            if (index >= total) index = 0;
+            currentIndex = index;
+            inner.style.transform = `translateX(-${currentIndex * 100}%)`;
+            updateDots();
+        }
+        
+        function nextSlide() {
+            goToSlide(currentIndex + 1);
+        }
+        function prevSlide() {
+            goToSlide(currentIndex - 1);
+        }
+        
+        // 启动自动轮播 (如果可见)
+        function startAutoPlay() {
+            if (!isVisible) return;
+            if (autoInterval) clearInterval(autoInterval);
+            autoInterval = setInterval(() => {
+                if (isVisible) {
+                    nextSlide();
+                }
+            }, 3000);
+        }
+        
+        function stopAutoPlay() {
+            if (autoInterval) {
+                clearInterval(autoInterval);
+                autoInterval = null;
+            }
+        }
+        
+        // 重置计时器（仅当可见时）
+        function resetAutoTimerIfVisible() {
+            if (isVisible) {
+                stopAutoPlay();
+                startAutoPlay();
+            }
+        }
+        
+        // 手动按钮事件：总是切换图片，并根据可见性决定是否重置计时
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            prevSlide();
+            resetAutoTimerIfVisible();
+        });
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            nextSlide();
+            resetAutoTimerIfVisible();
+        });
+        
+        // 使用 Intersection Observer 监测轮播容器的可见性
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (!isVisible) {
+                        isVisible = true;
+                        startAutoPlay();
+                    }
+                } else {
+                    if (isVisible) {
+                        isVisible = false;
+                        stopAutoPlay();
+                    }
+                }
+            });
+        }, { threshold: 0.4 }); // 至少40%可见时视为进入视口
+        
+        observer.observe(container);
+        
+        // 初始化显示第一张
+        goToSlide(0);
+        
+        // 为每张图片添加点击放大
+        items.forEach(item => {
+            const img = item.querySelector('img');
+            if (img) {
+                img.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openModal(img.src);
+                });
+            }
+        });
+        
+        // 清理函数 (可选，但本例中不需要)
+        // 注意：由于页面一直存在，observer 会一直工作，无内存泄漏风险
+    }
+    
+    // 全局模态框逻辑
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImg');
+    const closeModalBtn = document.querySelector('.close-modal');
+    
+    function openModal(src) {
+        modal.style.display = 'flex';
+        modalImg.src = src;
+        document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    closeModalBtn.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
+    });
+    
+    // 初始化所有轮播（独立可见性控制）
+    document.querySelectorAll('.carousel-container').forEach(container => {
+        initCarousel(container);
+    });
+    
+    // 滚动动画 Intersection Observer (景点卡片渐现)
+    const sections = document.querySelectorAll('.spot-section');
+    const scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                scrollObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+    sections.forEach(section => scrollObserver.observe(section));
+    
+    // 导航平滑滚动
+    document.querySelectorAll('.navbar a').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                const offsetTop = targetElement.offsetTop - 70;
+                window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+            }
+        });
+    });
+    
+    // 图片加载失败备用
+    const fallbackImg = "https://picsum.photos/id/104/800/600?grayscale";
+    document.querySelectorAll('.carousel-item img').forEach(img => {
+        img.addEventListener('error', function() {
+            if (!this.dataset.fallback) {
+                this.dataset.fallback = 'true';
+                this.src = fallbackImg;
+            }
+        });
+    });
+    
+    // 首屏显示动画（对已经可见的卡片直接添加 visible 类）
+    window.addEventListener('load', () => {
+        sections.forEach(section => {
+            const rect = section.getBoundingClientRect();
+            if (rect.top < window.innerHeight - 100) {
+                section.classList.add('visible');
+                scrollObserver.unobserve(section);
+            }
+        });
+    });
+</script>
+
+<script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.20/libs/cn/index.js"></script>
+<script>
+  new CozeWebSDK.WebChatClient({
+  config: {
+    bot_id: '7627479544215814196',
+  },
+  auth: {
+    type: 'token',
+    token: 'pat_hrBPBMDpuoicV1ww9DbSMDNzX4p14L2vArCBgb07IE4vnErQF4h6HNZxeno6vUNL',
+    onRefreshToken: function() {
+      return 'pat_hrBPBMDpuoicV1ww9DbSMDNzX4p14L2vArCBgb07IE4vnErQF4h6HNZxeno6vUNL'
+    }
+  },
+  ui: {
+    base: {
+      zIndex: 9999,
+    },
+    header: {
+      isShow: true,
+      isNeedClose: true,
+    },
+    chatBot: {
+      title: '重庆小导游',
+      width: 400,
+    },
+    footer: {
+      isShow: false,
+    },
+  }
+});
+</script>
+
+</body>
+</html>
